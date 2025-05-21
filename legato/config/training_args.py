@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Union, Optional
 
 @dataclass
 class DataArguments:
@@ -18,8 +19,11 @@ class DataArguments:
 
 @dataclass
 class ModelArguments:
-    model_config: str
-    pretrained_model: str = field(
+    model_config: Optional[str] = field(
+        default=None,
+        metadata={"help": "Path to the model configuration file."},
+    )
+    pretrained_model: Optional[str] = field(
         default=None,
         metadata={"help": "Set the path to load a pretrained model before training or evaluation."},
     )

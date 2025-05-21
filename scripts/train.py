@@ -1,35 +1,45 @@
-import fire
+import sys
 import torch
 import json
+import os
+import logging
 import numpy as np
 import torch.distributed as dist
 from datasets import load_from_disk
 from transformers import (
     Seq2SeqTrainingArguments,
+    TrainerState,
     HfArgumentParser, 
     AutoConfig,
     AutoProcessor,
     AutoModel,
     set_seed,
 )
-import logging
+from transformers.trainer import TRAINER_STATE_NAME
 from accelerate.logging import get_logger
 from legato.config import DataArguments, ModelArguments
-from legato.models import LegatoModel 
+from legato.models import LegatoConfig, LegatoModel 
 from legato.trainer import OMRTrainer
 from legato.metrics import compute_error_rates
 
-#logger = get_logger(__name__)
 
-def main(config_path: str):
+def main():
     parser = HfArgumentParser((Seq2SeqTrainingArguments, DataArguments, ModelArguments))
-    training_args, data_args, model_args = parser.parse_json_file(json_file=config_path)
+    if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+        training_args, data_args, model_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+    else:
+        training_args, data_args, model_args = parser.parse_args_into_dataclasses()
+
     set_seed(training_args.seed)
 
     logging.basicConfig(level=training_args.log_level.upper(), format='[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s')
     logger = get_logger(__name__)
 
     torch.set_float32_matmul_precision('high')
+    if training_args.torch_compile:
+        # Increase the cache size limit to avoid recompilation
+        # Large RAM usage may occur if the cache size is too large
+        torch._dynamo.config.cache_size_limit = 256
 
     #### Load dataset
     dataset = load_from_disk(data_args.dataset_path)
@@ -99,7 +109,10 @@ def main(config_path: str):
             padding=True,
             return_tensors='pt',
         )
-        outputs.update({f'gen_{k}': v for k, v in gen_outputs.items()})
+        outputs.update({
+            f'gen_{k}': outputs[k] if k not in gen_outputs else gen_outputs[k]
+            for k in outputs
+        })
         outputs['labels'] = outputs['input_ids'].clone().masked_fill(
             torch.isin(outputs['input_ids'], tokens_to_mask), -100
         ) # We don't predict image tokens or padding tokens
@@ -127,25 +140,46 @@ def main(config_path: str):
         compute_metrics=metric_fn
     )
 
+    def _unwrap_and_save_model(trainer, output_dir):
+        if trainer.is_world_process_zero():
+            logger.info("Unwrapping the model...")
+            unwrapped_model = trainer.accelerator.unwrap_model(trainer.model)
+            logger.info("Model unwrapped.")
+            unwrapped_model.save_pretrained(output_dir)
+            processor.save_pretrained(output_dir)
+            logger.info(f"Model and Processor saved. to {output_dir}")
+
     #### Train
     if training_args.do_train:
-        trainer.train()
-        result = trainer.evaluate()
-        if trainer.is_world_process_zero():
-            logger.log("Unwrapping the model...")
-            unwrapped_model = trainer.accelerator.unwrap_model(trainer.model)
-            logger.log("Model unwrapped.")
-            unwrapped_model.save_pretrained(training_args.output_dir)
-            processor.save_pretrained(training_args.output_dir)
-            logger.log(f"Model and Processor saved. to {training_args.output_dir}")
-            final_val_results = {k.replace("eval_", "eval_best_"): v for k, v in result.items() if k.startswith("eval_")}
-            trainer.log_metrics("best eval", final_val_results)
-            trainer.log(final_val_results)
-
+        trainer.train(resume_from_checkpoint=training_args.resume_from_checkpoint)
 
     #### Evaluate
-    if training_args.do_eval and not training_args.do_train and not training_args.do_predict:
-        pass
+    if training_args.do_eval:
+        if not training_args.do_train and os.path.exists(training_args.output_dir):
+            ckpts = [ckpt for ckpt in os.listdir(training_args.output_dir) if ckpt.startswith("checkpoint")]
+            assert len(ckpts) > 0, f"No checkpoints found in {training_args.output_dir}"
+            best_ckpt, best_result = None, None
+            for ckpt in sorted(ckpts):
+                logger.info(f"Evaluating checkpoint {ckpt}...")
+                trainer._load_from_checkpoint(os.path.join(training_args.output_dir, ckpt))
+                trainer.state = TrainerState.load_from_json(os.path.join(training_args.output_dir, ckpt, TRAINER_STATE_NAME))
+                trainer.state.init_training_references(trainer, trainer.state.max_steps, trainer.state.num_train_epochs, None)
+                trainer._load_callback_state()
+                result = trainer.evaluate()
+                if best_result is None or result['eval_SER'] < best_result['eval_SER']:
+                    best_result, best_ckpt = result, ckpt
+                trainer.log_metrics("eval", result)
+
+            logger.info(f"Best checkpoint: {best_ckpt}")
+            trainer._load_from_checkpoint(os.path.join(training_args.output_dir, best_ckpt))
+
+        else:
+            best_result = trainer.evaluate()
+
+        _unwrap_and_save_model(trainer, training_args.output_dir)
+        final_val_results = {k.replace("eval_", "eval_best_"): v for k, v in best_result.items() if k.startswith("eval_")}
+        trainer.log_metrics("best eval", final_val_results)
+        trainer.log(final_val_results)
 
     #### Predict
     if training_args.do_predict:
@@ -154,7 +188,7 @@ def main(config_path: str):
 
 if __name__ == "__main__":
     try:
-        fire.Fire(main)
+        main()
     finally:
         # Cleanup distributed process group
         if dist.is_available() and dist.is_initialized():
