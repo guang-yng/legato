@@ -19,7 +19,7 @@ from transformers.trainer import TRAINER_STATE_NAME
 from accelerate.logging import get_logger
 from legato.config import DataArguments, ModelArguments
 from legato.models import LegatoConfig, LegatoModel 
-from legato.trainer import OMRTrainer
+from legato.trainer import LegatoTrainer
 from legato.metrics import compute_error_rates
 
 
@@ -63,12 +63,11 @@ def main():
 
     if model_args.pretrained_model:
         model = AutoModel.from_pretrained(model_args.pretrained_model)
-        processor = AutoProcessor.from_pretrained(model_args.pretrained_model)
     else:
         config = AutoConfig.from_pretrained(model_args.model_config)
-        processor = AutoProcessor.from_pretrained(model_args.model_config)
         model = LegatoModel(config)
 
+    processor = AutoProcessor.from_pretrained(model_args.model_config)
     tokenizer = processor.tokenizer
 
     def get_metric_target(examples):
@@ -131,7 +130,7 @@ def main():
         dist.broadcast_object_list(results, src=0)
         return results[0]
 
-    trainer = OMRTrainer(
+    trainer = LegatoTrainer(
         model=model,
         args=training_args,
         data_collator=collate_fn,
@@ -155,7 +154,7 @@ def main():
 
     #### Evaluate
     if training_args.do_eval:
-        if not training_args.do_train and os.path.exists(training_args.output_dir):
+        if not training_args.do_train and not model_args.pretrained_model: # if no training is done and no pretrained model is provided, evaluate all checkpoints
             ckpts = [ckpt for ckpt in os.listdir(training_args.output_dir) if ckpt.startswith("checkpoint")]
             assert len(ckpts) > 0, f"No checkpoints found in {training_args.output_dir}"
             best_ckpt, best_result = None, None

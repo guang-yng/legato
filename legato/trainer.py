@@ -1,5 +1,8 @@
 import contextlib
 import torch
+import os
+import warnings
+import inspect
 from torch import nn
 from torch.distributed.fsdp import FullyShardedDataParallel
 from typing import Dict, Union, Optional, List, Any, Tuple
@@ -7,7 +10,60 @@ from transformers import Seq2SeqTrainer
 from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
 from transformers.integrations.fsdp import is_fsdp_managed_module
 
-class OMRTrainer(Seq2SeqTrainer):
+from transformers.trainer import *
+
+
+class LegatoTrainer(Seq2SeqTrainer):
+    def _save(self, output_dir: Optional[str] = None, state_dict=None):
+        """
+        Skip the vision model parameters when saving the model.
+        """
+        if state_dict is None:
+            state_dict = self.model.state_dict()
+        state_dict = {
+            k : v for k, v in state_dict.items() if not k.startswith('vision_model.')
+        }
+        super()._save(output_dir, state_dict)
+
+    def _save_optimizer_and_scheduler(self, output_dir):
+        if not self.is_deepspeed_enabled:
+            super()._save_optimizer_and_scheduler(output_dir)
+            return
+
+        # under zero3 model file itself doesn't get saved since it's bogus! Unless deepspeed
+        # config `stage3_gather_16bit_weights_on_model_save` is True
+        accept_exclude_frozen_parameters = "exclude_frozen_parameters" in set(
+            inspect.signature(self.model_wrapped.save_checkpoint).parameters.keys()
+        )
+        if accept_exclude_frozen_parameters: # Remove peft checking so that always exclude frozen parameters
+            self.model_wrapped.save_checkpoint(output_dir, exclude_frozen_parameters=True)
+        else:
+            self.model_wrapped.save_checkpoint(output_dir)
+
+        # Save SCHEDULER & SCALER
+        is_deepspeed_custom_scheduler = self.is_deepspeed_enabled and not isinstance(
+            self.lr_scheduler, DeepSpeedSchedulerWrapper
+        )
+        if (
+            self.args.should_save
+            and (not self.is_deepspeed_enabled or is_deepspeed_custom_scheduler)
+            and not is_torch_xla_available()
+        ):
+            with warnings.catch_warnings(record=True) as caught_warnings:
+                torch.save(self.lr_scheduler.state_dict(), os.path.join(output_dir, SCHEDULER_NAME))
+            reissue_pt_warnings(caught_warnings)
+
+    def _load_best_model(self):
+        if self.is_deepspeed_enabled:
+            logger.info(f"Loading best model from {self.state.best_model_checkpoint} (score: {self.state.best_metric}).")
+            deepspeed_load_checkpoint(
+                self.model_wrapped,
+                self.state.best_model_checkpoint,
+                load_module_strict=False, # The checkpoint is not saved with strict mode
+            )
+        else:
+            super()._load_best_model()
+
     def training_step(
         self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]], num_items_in_batch=None
     ) -> torch.Tensor:
