@@ -70,3 +70,12 @@ We release our checkpoints on HuggingFace:
 | Model Name    | Link |
 | -------- | ------- |
 | legato-small |  [guangyangmusic/legato-small](https://huggingface.co/guangyangmusic/legato-small)  |
+
+
+## Inference
+
+To do inference on a single image, use `scripts/inference.py` with appropriate arguments:
+
+```sh
+PYTHONPATH=. python scripts/inference.py --model_path guangyangmusic/legato-small --device cuda --image_path xxx.png
+```
