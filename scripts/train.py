@@ -88,7 +88,7 @@ def main():
             remove_columns=dataset['test'].column_names,
             num_proc=training_args.dataloader_num_workers, 
             batched=True
-        ).to_dict()
+        ).to_dict() if 'transcription' in dataset['test'].column_names else None
 
     # We don't predict image tokens or padding tokens
     tokens_to_mask = torch.tensor([processor.image_token_id, tokenizer.pad_token_id])
@@ -182,7 +182,19 @@ def main():
 
     #### Predict
     if training_args.do_predict:
-        pass
+        outputs = trainer.predict(dataset['test'])
+
+        if trainer.is_world_process_zero():
+            abc_outputs = processor.batch_decode(outputs.predictions, skip_special_tokens=True)
+            preds = remove_special_tokens(outputs.predictions)
+            with open(os.path.join(training_args.output_dir, "test_predictions.json"), "w") as f:
+                json.dump({'abc_transcription': abc_outputs, 'tokens': [p.tolist() for p in preds]}, f)
+
+            if metric_targets:
+                results = compute_error_rates(
+                    tokenizer, training_args.dataloader_num_workers, *metric_targets.values(), preds
+                )
+                trainer.log_metrics("test", results)
     
 
 if __name__ == "__main__":

@@ -1,0 +1,28 @@
+{
+    "model_config": "guangyangmusic/legato-small",
+    "pretrained_model": "outputs/legato-small-lr-3e-4/",
+
+    "dataset_path": "datasets/PDMX-Synth",
+    "mini_test_file": "datasets/mini_test.json",
+    "dummy_data": false,
+
+    "output_dir": "outputs/legato-small-lr-3e-4/",
+    "remove_unused_columns": false,
+
+    "run_name": "legato-small-predict",
+    "do_train": false,
+    "do_eval": false,
+    "do_predict": true,
+    "dataloader_num_workers": 8,
+    "dataloader_prefetch_factor": 2,
+    "ddp_find_unused_parameters": false,
+    "per_device_eval_batch_size": 2,
+    "bf16_full_eval": true,
+    "predict_with_generate": true,
+    "generation_max_length": 2048,
+    "generation_num_beams": 3,
+
+    "bf16": true,
+    "report_to": "wandb",
+    "log_level": "info"
+}

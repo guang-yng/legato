@@ -79,3 +79,12 @@ To do inference on a single image, use `scripts/inference.py` with appropriate a
 ```sh
 PYTHONPATH=. python scripts/inference.py --model_path guangyangmusic/legato-small --device cuda --image_path xxx.png
 ```
+
+To do batched inference on a whole dataset, use commands in `scripts/predict_legato_small.sh`.
+For example, the following command do prediction on the mini test set of PDMX-Synth.
+```sh
+accelerate launch --config_file configs/inference.yaml \
+    scripts/train.py configs/legato-small-predict.json 
+```
+The predictions will be store in `test_predictions.json` file under the output directory.
+If `transcription` column is included in the dataset, the script will also compute the error rates.
