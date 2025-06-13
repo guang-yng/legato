@@ -176,3 +176,5 @@ cython_debug/
 datasets/
 wandb/
 outputs/
+
+software/*

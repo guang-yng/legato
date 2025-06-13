@@ -7,5 +7,6 @@ pillow==11.1.0
 deepspeed
 Levenshtein
 tqdm
-nltk
 wandb
+pyparsing
+zss
