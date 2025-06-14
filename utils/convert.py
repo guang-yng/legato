@@ -184,3 +184,5 @@ if __name__ == "__main__":
         
     with open(output_file, "w") as f:
         json.dump(outputs, f)
+
+    print(f"Saved XML outputs to {output_file}")

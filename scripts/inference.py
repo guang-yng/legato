@@ -35,8 +35,7 @@ if __name__ == "__main__":
     processor = AutoProcessor.from_pretrained(args.processor_path)
     generation_config = GenerationConfig(max_length=2048, num_beams=args.beam_size, repetition_penalty=1.1)
 
-    if args.image_path.endswith('/'):
-        args.image_path = args.image_path[:-1]
+    args.image_path = os.path.abspath(args.image_path)
 
     # Load the image and process it
     if os.path.isdir(args.image_path):
@@ -82,7 +81,7 @@ if __name__ == "__main__":
         args.output_path = os.path.dirname(args.image_path) 
 
     if os.path.isdir(args.output_path):
-        output_file = os.path.join(args.output_path, f"{os.path.basename(args.image_path)}_{args.model_path.replace('/', '_')}_abc.json")
+        output_file = os.path.join(args.output_path, f"{os.path.basename(args.image_path).split('.')[0]}_{args.model_path.replace('/', '_')}_abc.json")
     else:
         output_file = args.output_path
     with open(output_file, "w") as f:
