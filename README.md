@@ -79,7 +79,7 @@ PYTHONPATH=. accelerate launch --config_file configs/zero2.yaml \
     scripts/train.py \
     --model_config guangyangmusic/legato \
     --dataset_path datasets/PDMX-Synth \
-    --output_dir outputs/legato-small \
+    --output_dir outputs/legato \
     --remove_unused_columns False \
     --do_train --do_eval \
     --metric_for_best_model eval_SER --greater_is_better False \
@@ -91,7 +91,7 @@ PYTHONPATH=. accelerate launch --config_file configs/zero2.yaml \
 
 Refer to [TrainingArguments docs](https://huggingface.co/docs/transformers/en/main_classes/trainer#transformers.TrainingArguments) for more options.
 
-LEGATO uses **DeepSpeed ZeRO-2** by default. You can modify or provide your own Accelerate config (configs/*.yaml).
+LEGATO uses **DeepSpeed ZeRO-2** by default. You can modify or provide your own Accelerate config (`configs/*.yaml`).
 
 ### ✅ Validation
 
@@ -133,9 +133,9 @@ DISPLAY=:0 python utils/convert.py --input_file xxx_abc.json
 ```
 
 Requirements:
-> MuseScore executable at `software/mscore`
-> GUI-enabled environment (DISPLAY=:0)
-> Depends on `utils/abc2xml.py`
+- MuseScore executable at `software/mscore`
+- GUI-enabled environment (DISPLAY=:0)
+- Depends on `utils/abc2xml.py`
 
 ### 🌲 TEDn Evaluation
 
@@ -149,5 +149,7 @@ PYTHONPATH=. python scripts/compute_TEDn.py \
 ```
 
 Dataset must contain a `musicxml` column.
+
+> Parts of `utils/TEDn_eval` are adapted from [OLIMPIC](https://github.com/ufal/olimpic-icdar24), licensed under the MIT License.
 
 ## 📄 Citation

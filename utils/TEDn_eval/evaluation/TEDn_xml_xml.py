@@ -1,3 +1,6 @@
+# Adapted from https://github.com/ufal/olimpic-icdar24 under the MIT License
+# Copyright (c) 2024 Jiří Mayer
+# SPDX-License-Identifier: MIT
 from .TEDn import TEDn, TEDnResult
 from ..symbolic.Pruner import Pruner
 from ..symbolic.actual_durations_to_fractional import actual_durations_to_fractional

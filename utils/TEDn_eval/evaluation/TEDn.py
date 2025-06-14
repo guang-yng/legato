@@ -1,3 +1,6 @@
+# Adapted from https://github.com/ufal/olimpic-icdar24 under the MIT License
+# Copyright (c) 2024 Jiří Mayer
+# SPDX-License-Identifier: MIT
 import xml.etree.ElementTree as ET
 import zss
 import time

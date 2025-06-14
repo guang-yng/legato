@@ -19,3 +19,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Notices and Third-Party Licenses
+
+- Portions of the code in `utils/TEDn_eval/` are adapted from the OLIMPIC project:  
+  [https://github.com/ufal/olimpic-icdar24](https://github.com/ufal/olimpic-icdar24)  
+  Licensed under the MIT License by Jiří Mayer.
+
+- `utils/abc2xml.py` is licensed under the GNU Lesser General Public License v3.0.
+  See https://www.gnu.org/licenses/lgpl-3.0.html for the full license text.
