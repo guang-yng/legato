@@ -134,7 +134,7 @@ DISPLAY=:0 python utils/convert.py --input_file xxx_abc.json
 
 Requirements:
 - MuseScore executable at `software/mscore`
-- GUI-enabled environment (DISPLAY=:0)
+- GUI-enabled environment (`DISPLAY=:0`)
 - Depends on `utils/abc2xml.py`
 
 ### 🌲 TEDn Evaluation
