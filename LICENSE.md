@@ -24,7 +24,7 @@ SOFTWARE.
 
 ## Notices and Third-Party Licenses
 
-- Portions of the code in `utils/TEDn_eval/` are adapted from the OLIMPIC project:  
+- Portions of the code in `utils/TEDn_eval/` are adapted from the OLiMPiC project:  
   [https://github.com/ufal/olimpic-icdar24](https://github.com/ufal/olimpic-icdar24)  
   Licensed under the MIT License by Jiří Mayer.
 

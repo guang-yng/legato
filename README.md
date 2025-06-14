@@ -150,6 +150,6 @@ PYTHONPATH=. python scripts/compute_TEDn.py \
 
 Dataset must contain a `musicxml` column.
 
-> Parts of `utils/TEDn_eval` are adapted from [OLIMPIC](https://github.com/ufal/olimpic-icdar24), licensed under the MIT License.
+> Parts of `utils/TEDn_eval` are adapted from [OLiMPiC](https://github.com/ufal/olimpic-icdar24), licensed under the MIT License.
 
 ## 📄 Citation
