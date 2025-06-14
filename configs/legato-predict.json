@@ -16,7 +16,7 @@
     "dataloader_num_workers": 8,
     "dataloader_prefetch_factor": 2,
     "ddp_find_unused_parameters": false,
-    "per_device_eval_batch_size": 2,
+    "per_device_eval_batch_size": 1,
     "bf16_full_eval": true,
     "predict_with_generate": true,
     "generation_max_length": 2048,

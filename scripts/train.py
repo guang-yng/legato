@@ -72,7 +72,7 @@ def main():
 
     def get_metric_target(examples):
         return {
-            'label_ids': processor(text=examples['transcription'], add_special_tokens=False, verbose=False)['input_ids'],
+            'label_ids': processor(text=examples['transcription'], add_special_tokens=False, verbose=False, truncation=False)['input_ids'],
         }
 
     if not training_args.do_predict:

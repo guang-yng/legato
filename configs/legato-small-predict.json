@@ -1,6 +1,6 @@
 {
     "model_config": "guangyangmusic/legato-small",
-    "pretrained_model": "outputs/legato-small-lr-3e-4/",
+    "pretrained_model": "guangyangmusic/legato-small",
 
     "dataset_path": "datasets/PDMX-Synth",
     "mini_test_file": "datasets/mini_test.json",
@@ -16,7 +16,7 @@
     "dataloader_num_workers": 8,
     "dataloader_prefetch_factor": 2,
     "ddp_find_unused_parameters": false,
-    "per_device_eval_batch_size": 2,
+    "per_device_eval_batch_size": 1,
     "bf16_full_eval": true,
     "predict_with_generate": true,
     "generation_max_length": 2048,
