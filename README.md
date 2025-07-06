@@ -153,3 +153,15 @@ Dataset must contain a `musicxml` column.
 > Parts of `utils/TEDn_eval` are adapted from [OLiMPiC](https://github.com/ufal/olimpic-icdar24), licensed under the MIT License.
 
 ## 📄 Citation
+
+```
+@misc{yang2025legatolargescaleendtoendgeneralizable,
+      title={LEGATO: Large-scale End-to-end Generalizable Approach to Typeset OMR}, 
+      author={Guang Yang and Victoria Ebert and Nazif Tamer and Luiza Pozzobon and Noah A. Smith},
+      year={2025},
+      eprint={2506.19065},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2506.19065}, 
+}
+```
