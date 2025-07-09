@@ -124,6 +124,15 @@ accelerate launch --config_file configs/inference.yaml \
 
 ## 🔁 MusicXML Conversion & Evaluation
 
+### 📏 ABC Error Rate Evaluation
+
+To evaluate the ABC transcription accuracy of your model predictions, use the provided script:
+```bash
+PYTHONPATH=. python scripts/compute_ER.py \
+    --prediction_file path/to/test_predictions.json \
+    --ground_truth datasets/PDMX-Synth
+```
+
 ### 🎼 ABC to MusicXML Conversion
 
 Convert ABC predictions to MusicXML using:
