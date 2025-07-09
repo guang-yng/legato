@@ -1,8 +1,8 @@
 # LEGATO: Large-Scale End-to-End Generalizable Approach to Typeset OMR
 
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3129/)
 [![PyTorch 2.6.0](https://img.shields.io/badge/PyTorch-2.6.0-%23ee4c2c?logo=pytorch)](https://pytorch.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 Official repository for the paper:  
 **["LEGATO: Large-Scale End-to-End Generalizable Approach to Typeset OMR"](https://arxiv.org/abs/2506.19065)**
