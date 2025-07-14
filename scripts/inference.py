@@ -24,6 +24,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_path", type=str, default=None, help="Path to save the predictions")
     parser.add_argument("--batch_size", type=int, default=1, help="Batch size for processing images")
     parser.add_argument("--beam_size", type=int, default=10, help="Beam size for generation")
+    parser.add_argument("--fp16", action='store_true', help="Use fp16 precision for inference")
 
     args = parser.parse_args()
 
@@ -49,7 +50,9 @@ if __name__ == "__main__":
     else:
         imgs = [Image.open(args.image_path).convert("RGB")]
 
-    model = model.to(args.device)
+    model = model.to(device=args.device)
+    if args.fp16:
+        model = model.half()
 
     output_tokens = []
     for i in tqdm(range(0, len(imgs), args.batch_size), desc="Predicting..."):

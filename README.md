@@ -59,6 +59,10 @@ PYTHONPATH=. python scripts/inference.py \
 
 Set `image_path` to the folder containing the dataset. Ensure the dataset has a column named image with score images.
 
+### Half Precision Inference
+
+Use `--fp16` flag to enable half-precision inference. This reduces memory usage but may impact performance.
+
 ## 🎯 Training & Validation
 
 We use `legato` in examples below. Refer to the [Checkpoints](#-pretrained-checkpoints) section for pretrained models.
