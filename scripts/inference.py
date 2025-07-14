@@ -40,10 +40,23 @@ if __name__ == "__main__":
 
     # Load the image and process it
     if os.path.isdir(args.image_path):
-        if all(img.endswith(('.png', '.jpg', '.jpeg')) for img in os.listdir(args.image_path)):
+        if all(
+            img.endswith((".png", ".jpg", ".jpeg"))
+            for img in os.listdir(args.image_path)
+        ):
             imgs = []
-            for img_path in os.listdir(args.image_path):
-                imgs.append(Image.open(os.path.join(args.image_path, img_path)).convert("RGB"))
+            image_files = sorted(
+                [
+                    f
+                    for f in os.listdir(args.image_path)
+                    if f.lower().endswith((".png", ".jpg", ".jpeg"))
+                ]
+            )
+
+            for img_path in image_files:
+                imgs.append(
+                    Image.open(os.path.join(args.image_path, img_path)).convert("RGB")
+                )
         else:
             dataset = load_from_disk(args.image_path)
             imgs = dataset['image']
