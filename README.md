@@ -57,10 +57,12 @@ PYTHONPATH=. python scripts/inference.py \
 
 ### Run Inference on a PDF
 
+You will need to install [MuseScore](https://github.com/musescore/MuseScore/releases/) and locate the MuseScore CLI binary.
+
 ```bash
 PYTHONPATH=. python scripts/pdf-to-musicxml.py \
-    # set to path of your local MuseScore CLI
     --pdf_path ./my.pdf \
+    # MuseScore CLI binary path
     --musescore_path "/Applications/MuseScore 4.app/Contents/MacOS/mscore" \
     --output_folder ./output
 ```
