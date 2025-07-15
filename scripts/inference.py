@@ -40,10 +40,23 @@ if __name__ == "__main__":
 
     # Load the image and process it
     if os.path.isdir(args.image_path):
-        if all(img.endswith(('.png', '.jpg', '.jpeg')) for img in os.listdir(args.image_path)):
+        if all(
+            img.endswith((".png", ".jpg", ".jpeg"))
+            for img in os.listdir(args.image_path)
+        ):
             imgs = []
-            for img_path in os.listdir(args.image_path):
-                imgs.append(Image.open(os.path.join(args.image_path, img_path)).convert("RGB"))
+            image_files = sorted(
+                [
+                    f
+                    for f in os.listdir(args.image_path)
+                    if f.lower().endswith((".png", ".jpg", ".jpeg"))
+                ]
+            )
+
+            for img_path in image_files:
+                imgs.append(
+                    Image.open(os.path.join(args.image_path, img_path)).convert("RGB")
+                )
         else:
             dataset = load_from_disk(args.image_path)
             imgs = dataset['image']
@@ -84,7 +97,21 @@ if __name__ == "__main__":
         args.output_path = os.path.dirname(args.image_path) 
 
     if os.path.isdir(args.output_path):
-        output_file = os.path.join(args.output_path, f"{os.path.basename(args.image_path).split('.')[0]}_{args.model_path.replace('/', '_')}_abc.json")
+        if os.path.isdir(args.image_path):
+            for idx, (abc, pred) in enumerate(zip(abc_outputs, preds)):
+                output_file = os.path.join(
+                    args.output_path,
+                    f"image_{idx:04}_{args.model_path.replace('/', '_')}_abc.json",
+                )
+                with open(output_file, "w") as f:
+                    json.dump({'abc_transcription': [abc], 'tokens': [pred]}, f)
+            print("Inference completed. Outputs saved to directory:", args.output_path)
+            exit()
+
+        output_file = os.path.join(
+            args.output_path,
+            f"{os.path.basename(args.image_path).split('.')[0]}_{args.model_path.replace('/', '_')}_abc.json",
+        )
     else:
         output_file = args.output_path
     with open(output_file, "w") as f:
