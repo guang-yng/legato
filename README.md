@@ -55,6 +55,21 @@ PYTHONPATH=. python scripts/inference.py \
 
 > 🖼️ Image folder should contain only .jpg, .jpeg, or .png files.
 
+### Run Inference on a PDF
+
+```bash
+PYTHONPATH=. python scripts/pdf-to-musicxml.py \
+    # set to path of your local MuseScore CLI
+    --pdf_path ./my.pdf \
+    --musescore_path "/Applications/MuseScore 4.app/Contents/MacOS/mscore" \
+    --output_folder ./output
+```
+
+The output folder will contain the following files:
+- 1 PNGs per page of the PDF
+- 1 `..._abc.json` per page
+- 1 musicxml file with the same name as your PDF
+
 ### Inference from datasets.Dataset
 
 Set `image_path` to the folder containing the dataset. Ensure the dataset has a column named image with score images.
