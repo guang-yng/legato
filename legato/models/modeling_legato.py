@@ -66,6 +66,8 @@ class LegatoModel(MllamaForConditionalGeneration):
                 kwargs.pop('config')
             model.vision_model = MllamaVisionModel.from_pretrained(encoder_ref, *model_args, **kwargs)
             model.config.vision_config = model.vision_model.config
+            for param in model.vision_model.parameters():
+                param.requires_grad = False
         else:
             model.config.encoder_pretrained_model_name_or_path = model.vision_model.config.name_or_path
 
