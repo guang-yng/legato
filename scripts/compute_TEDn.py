@@ -1,6 +1,7 @@
 import json
 import concurrent.futures
 import xml.etree.ElementTree as ET
+import os
 from tqdm import tqdm
 from datasets import load_from_disk
 from argparse import ArgumentParser
@@ -28,7 +29,7 @@ def compute_score(input_data):
     if gold_init_num_nodes > 6000:
         print(f"Index {idx}: Gold XML initial nodes {gold_init_num_nodes}, after cut {sum(1 for _ in ET.fromstring(gold_xml).iter())}")
     score = TEDn_xml_xml(pred_xml, gold_xml, flavor='lmx')
-    return score.edit_cost / score.gold_cost * 100
+    return idx, score.edit_cost / score.gold_cost * 100
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -38,7 +39,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-    if args.prediction_file.split('.')[0].split('_')[-1] != 'xml':
+    if os.path.basename(args.prediction_file).split('.')[0].split('_')[-1] != 'xml':
         print("[WARNING] The prediction file name is not ended with `xml`. TEDn computation may fail.")
 
     with open(args.prediction_file, "r") as f:
@@ -59,6 +60,9 @@ if __name__ == "__main__":
         TED_scores = []
         for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures), desc="Computing TED scores..."):
             TED_scores.append(future.result())
+
+    TED_scores.sort(key=lambda x: x[0])
+    TED_scores = [x[1] for x in TED_scores]
 
     scores = {"average_TEDn":  sum(TED_scores) / len(TED_scores), "all_TEDn": TED_scores}
     print(f"Average TED score: {scores['average_TEDn']}")
