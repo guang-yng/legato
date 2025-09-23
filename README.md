@@ -166,6 +166,38 @@ Dataset must contain a `musicxml` column.
 
 > Parts of `utils/TEDn_eval` are adapted from [OLiMPiC](https://github.com/ufal/olimpic-icdar24), licensed under the MIT License.
 
+### 🌲 TEDn Convert Evaluation
+
+Compute TEDn scores only for samples that successfully convert from ABC to MusicXML:
+
+```bash
+PYTHONPATH=. python scripts/compute_TEDn_convert.py \
+    --tedn_file xxx_ted_scores.json \
+    --fail_mask xxx_fail_mask.json
+```
+
+This tool filters TEDn scores using a boolean mask indicating which samples failed kern-to-MusicXML conversion.
+
+### 🎵 OMR-NED Evaluation
+
+Compute Optical Music Recognition Normalized Edit Distance (OMR-NED) using the musicdiff library:
+
+```bash
+PYTHONPATH=. python scripts/compute_OMR-NED.py \
+    --prediction_file xxx_xml.json \
+    --ground_truth path/to/dataset
+```
+
+This evaluation:
+- Creates temporary folders for predictions and ground truth MusicXML files
+- Runs musicdiff evaluation with `--ml_training_evaluation` mode
+- Provides detailed error analysis and normalized edit distance metrics
+- Saves results to an output folder with comprehensive evaluation reports
+
+Requirements:
+- `musicdiff` library installed (`pip install musicdiff`)
+- Dataset must contain a `musicxml` column
+
 ## 📄 Citation
 
 ```
