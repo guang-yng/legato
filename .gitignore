@@ -173,7 +173,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-datasets/
+datasets/*
+!datasets/fail_mask_*.json
 wandb/
 outputs/
 

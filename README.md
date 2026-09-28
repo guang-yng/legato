@@ -178,6 +178,19 @@ PYTHONPATH=. python scripts/compute_TEDn_convert.py \
 
 This tool filters TEDn scores using a boolean mask indicating which samples failed kern-to-MusicXML conversion.
 
+The masks used for the evaluation sets in the paper are provided in `datasets/`:
+
+| Mask | Dataset | Convertible samples |
+|------|---------|---------------------|
+| `fail_mask_OpenScore-StringQuartets.json` | Camera OpenScore String Quartets (252) | 18 |
+| `fail_mask_OpenScore-StringQuartets_rendered.json` | Rendered OpenScore String Quartets (252) | 28 |
+| `fail_mask_OpenScore-Lieder.json` | Camera OpenScore Lieder (64, v1.2) | 4 |
+| `fail_mask_OpenScore-Lieder_rendered.json` | Rendered OpenScore Lieder (64, v1.2) | 4 |
+| `fail_mask_CameraIMSLP.json` | IMSLP Piano Scores (32) | 3 |
+
+`true` marks a sample whose SMT++ **kern output could not be converted to MusicXML; TEDn_convert is
+averaged over the remaining entries only.
+
 ### 🎵 OMR-NED Evaluation
 
 Compute Optical Music Recognition Normalized Edit Distance (OMR-NED) using the musicdiff library:
@@ -197,6 +210,24 @@ This evaluation:
 Requirements:
 - `musicdiff` library installed (`pip install musicdiff`)
 - Dataset must contain a `musicxml` column
+
+#### One-step pipeline
+
+`scripts/eval_pipeline_OMR-NED.py` chains ABC-to-MusicXML conversion and OMR-NED scoring, so a raw
+ABC prediction file can be evaluated in a single command:
+
+```bash
+PYTHONPATH=. python scripts/eval_pipeline_OMR-NED.py \
+    --input_file xxx_abc.json \
+    --ground_truth path/to/dataset
+```
+
+Pass a `xxx_xml.json` file instead to skip the conversion step. The script starts a virtual display
+before invoking MuseScore; use `--skip_xvnc` if `DISPLAY` is already set, or point `$XVNC_SCRIPT` at
+your own Xvnc launcher.
+
+> ⚠️ `utils/convert.py` and `scripts/compute_OMR-NED.py` infer the file type from the last
+> `_`-separated token of the filename, so avoid `.` in the stem (use `v1p1` rather than `v1.1`).
 
 ## 📄 Citation
 
