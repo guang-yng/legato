@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 Official repository for the paper:  
-**["LEGATO: Large-Scale End-to-End Generalizable Approach to Typeset OMR"](https://arxiv.org/abs/2506.19065)**
+**["LEGATO: Large-Scale End-to-End Generalizable Approach to Typeset OMR"](https://arxiv.org/abs/2506.19065)** — ICLR 2026
 
 ## 🛠️ Setup Instructions
 
@@ -232,13 +232,14 @@ your own Xvnc launcher.
 ## 📄 Citation
 
 ```
-@misc{yang2025legatolargescaleendtoendgeneralizable,
-      title={LEGATO: Large-scale End-to-end Generalizable Approach to Typeset OMR}, 
-      author={Guang Yang and Victoria Ebert and Nazif Tamer and Brian Siyuan Zheng and Luiza Pozzobon and Noah A. Smith},
-      year={2025},
-      eprint={2506.19065},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2506.19065}, 
+@inproceedings{yang2026legato,
+  title={{LEGATO}: Large-scale End-to-end Generalizable Approach to Typeset {OMR}},
+  author={Guang Yang and Victoria Ebert and Nazif Can Tamer and Brian Siyuan Zheng and Luiza Amador Pozzobon and Noah A. Smith},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  eprint={2506.19065},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2506.19065}
 }
 ```
